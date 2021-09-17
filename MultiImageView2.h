@@ -23,13 +23,12 @@ public:
 protected:
 	void resizeEvent(QResizeEvent* event);
 private:
+	GetMacro(Layout, cur_layout)
 	QMap<ViewType, PTR<ViewRenderScene>> m_scene_map;
 	QVTKOpenGLNativeWidget* qvtk_widget_ = nullptr;
 	SPTR<MousePicker> mouse_picker_;
 	MPRStyle* m_mprStyle = nullptr;
 	SPTR<vtkImageData> img_data_ = nullptr;
-	Layout m_cur_layout = LAYOUT_NONE;
-
 	fullScreenCallback* m_full_screen_callback;
 };
 

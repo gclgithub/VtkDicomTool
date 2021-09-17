@@ -13,6 +13,12 @@
 #include "vtkCallbackCommand.h"
 vtkStandardNewMacro(MPRStyle);
 
+
+void MPRStyle::initiate()
+{
+
+}
+
 void MPRStyle::OnKeyDown()
 {
 	std::string key = this->GetInteractor()->GetKeySym();
@@ -30,7 +36,7 @@ void MPRStyle::OnKeyDown()
 
 void MPRStyle::OnMouseMove()
 {
-	std::cout << "OnMouseMove" << std::endl;
+	//std::cout << "OnMouseMove" << std::endl;
 	if (auto render_scene = GetCurRenderScene())
 	{
 		if (m_last_scene != render_scene)
@@ -46,6 +52,7 @@ void MPRStyle::OnMouseMove()
 			vtkInteractorStyleTrackballCamera::OnMouseMove();
 			return;
 		}
+		int* pos = this->GetInteractor()->GetEventPosition();
 
 		switch (MouseFunction)
 		{
@@ -60,9 +67,25 @@ void MPRStyle::OnMouseMove()
 			this->Pan();
 			this->InvokeEvent(vtkCommand::InteractionEvent, nullptr);
 			break;
-		case GRAYLEVEL:
 			//灰阶,原左键功能
+		case GRAYLEVEL:
+		{
+			double ww, wl,dww,dwl;
+			render_scene->get_reslice()->get_window_level(ww, wl, dwl, dww);
+
+			int* last_pos = this->GetInteractor()->GetLastEventPosition();
+			QPoint delta = QPoint(pos[0], pos[1]) - QPoint(last_pos[0], last_pos[1]);
+			wl = -delta.y() * 0.1 + wl;
+			ww = delta.x() * 0.1 + ww;
+			wl = min(255.0, max(wl, 0.0));
+			ww = min(255.0, max(ww, 0.0));
+			for (auto sc : m_scenes)
+			{
+				if (sc->get_viewType() != VOL_M) 
+					sc->updataInfoWL(wl, ww);
+			}
 			break;
+		}
 		case ROTATE:
 			this->Rotate();
 			this->InvokeEvent(vtkCommand::InteractionEvent, nullptr);
@@ -74,8 +97,8 @@ void MPRStyle::OnMouseMove()
 		default:
 			break;
 		}
-
 	}
+	Interactor->Render();
 }
 
 void MPRStyle::OnLeftButtonDown()
@@ -84,10 +107,15 @@ void MPRStyle::OnLeftButtonDown()
 	int y = this->Interactor->GetEventPosition()[1];
 	this->FindPokedRenderer(x, y);
 
+	if (MouseFunction == POINTER) 
+	{
+		MouseFunction = GRAYLEVEL;
+	}
 }
 
 void MPRStyle::OnLeftButtonUp()
 {
+	MouseFunction = POINTER;
 	for (auto sc : m_scenes)
 	{
 		sc->resetCamera();
@@ -177,8 +205,24 @@ PTR<ViewRenderScene> MPRStyle::GetCurRenderScene()
 	int y = this->Interactor->GetEventPosition()[1];
 	this->FindPokedRenderer(x, y);
 	auto render = CurrentRenderer;
+
+
+	//check button_widget
+	for (auto sc : m_scenes) 
+	{
+		if (auto btn_widget = sc->get_button_widget()) 
+		{
+			sc->get_button_widget()->ProcessEventsOff();
+			btn_widget->Off();
+		}
+	}
 	auto it = std::find_if(m_scenes.begin(), m_scenes.end(), [render](PTR<ViewRenderScene> sc) {
 		return sc->get_renderer().Get() == render; });
 	if (it == m_scenes.end())return nullptr;
+	if (auto btn_widget = (*it)->get_button_widget())
+	{
+		btn_widget->ProcessEventsOn();
+		btn_widget->On();
+	}
 	return *it;
 }

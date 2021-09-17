@@ -21,12 +21,14 @@ MultiImageView2::MultiImageView2(QWidget* parent):QWidget(parent)
 	layout->addWidget(qvtk_widget_);
 
 	m_mprStyle = MPRStyle::New();
+	m_mprStyle->initiate();
 	//m_mprStyle->setRenderArea(parent->pos(), parent->size());
 	qvtk_widget_->interactor()->SetInteractorStyle(m_mprStyle);
 
 
 	mouse_picker_ = MousePicker::New();
 	m_full_screen_callback = fullScreenCallback::New(this);
+	m_cur_layout = LAYOUT_NONE;
 
 }
 
@@ -77,51 +79,62 @@ void MultiImageView2::resizeEvent(QResizeEvent* event)
 		m_scene_map[COR_M]->resize(width * 0.4, height * 0.5);
 		m_scene_map[SAG_M]->resize(width * 0.4, height * 0.5);
 	}
-	qvtk_widget_->interactor()->Render();
-	//qvtk_widget_->renderWindow()->Render();
+	qvtk_widget_->renderWindow()->Modified();//must add
+	//qvtk_widget_->interactor()->Render();
+	qvtk_widget_->renderWindow()->Render();
 }
 
 void MultiImageView2::SwitchToTCS()
 {
 	if (m_scene_map.size() != 4)return;
-	m_scene_map[TRA_M]->setViewport(0.0, 0.0, 0.6, 1.0);
-	m_scene_map[COR_M]->setViewport(0.6, 0.0, 1.0, 0.5);
-	m_scene_map[SAG_M]->setViewport(0.6, 0.5, 1.0, 1.0);
-	m_scene_map[VOL_M]->setViewport(0.0, 0.0, 0.0, 0.0);
 
-	m_scene_map[TRA_M]->get_renderer()->DrawOn();
-	m_scene_map[COR_M]->get_renderer()->DrawOn();
-	m_scene_map[SAG_M]->get_renderer()->DrawOn();
-	m_scene_map[VOL_M]->get_renderer()->DrawOff();
+	std::vector<std::vector<double>> view_port = {
+	{0.0, 0.0, 0.0, 0.0},/*VOL_M*/
+	{0.0, 0.0, 0.6, 1.0},/*TRA_M*/
+	{0.6, 0.0, 1.0, 0.5},/*COR_M*/
+	{0.6, 0.5, 1.0, 1.0}/*SAG_M*/};
 
 	std::vector<PTR<ViewRenderScene>> render_scenes;
-	render_scenes.emplace_back(m_scene_map[TRA_M]);
-	render_scenes.emplace_back(m_scene_map[COR_M]);
-	render_scenes.emplace_back(m_scene_map[SAG_M]);
+	for (int i = 0; i < view_port.size(); i++) 
+	{
+		auto vport = view_port[i];
+		m_scene_map[ViewType(i)]->setViewport(vport[0], vport[1], vport[2], vport[3]);
+		if (i != 0) 
+		{
+			m_scene_map[ViewType(i)]->get_renderer()->DrawOn();
+			m_scene_map[ViewType(i)]->set_button_widget_state();
+			render_scenes.emplace_back(m_scene_map[ViewType(i)]);
+		}
+		else 
+		{
+			m_scene_map[ViewType(i)]->get_renderer()->DrawOff();
+			m_scene_map[ViewType(i)]->set_button_widget_state();
+		}
+
+	}
 	m_mprStyle->set_scenes(render_scenes);
 	m_cur_layout = LAYOUT_TCS;
 	this->resizeEvent(nullptr);
-
 }
 
 void MultiImageView2::SwitchToTCSV()
 {
 	if (m_scene_map.size() != 4)return;
+	std::vector<std::vector<double>> view_port = {
+		{0.5, 0.0, 1.0, 0.5},
+		{0.0, 0.0, 0.5, 0.5},
+		{0.0, 0.5, 0.5, 1.0},
+		{0.5, 0.5, 1.0, 1.0} };
+
 	std::vector<PTR<ViewRenderScene>> render_scenes;
-	m_scene_map[TRA_M]->setViewport(0.0, 0.0, 0.5, 0.5);
-	m_scene_map[COR_M]->setViewport(0.0, 0.5, 0.5, 1.0);
-	m_scene_map[SAG_M]->setViewport(0.5, 0.5, 1.0, 1.0);
-	m_scene_map[VOL_M]->setViewport(0.5, 0.0, 1.0, 0.5);
-
-	m_scene_map[TRA_M]->get_renderer()->DrawOn();
-	m_scene_map[COR_M]->get_renderer()->DrawOn();
-	m_scene_map[SAG_M]->get_renderer()->DrawOn();
-	m_scene_map[VOL_M]->get_renderer()->DrawOn();
-
-	render_scenes.emplace_back(m_scene_map[TRA_M]);
-	render_scenes.emplace_back(m_scene_map[COR_M]);
-	render_scenes.emplace_back(m_scene_map[SAG_M]);
-	render_scenes.emplace_back(m_scene_map[VOL_M]);
+	for (int i = 0; i < view_port.size(); i++)
+	{
+		auto vport = view_port[i];
+		m_scene_map[ViewType(i)]->setViewport(vport[0], vport[1], vport[2], vport[3]);
+		m_scene_map[ViewType(i)]->get_renderer()->DrawOn();
+		m_scene_map[ViewType(i)]->set_button_widget_state();
+		render_scenes.emplace_back(m_scene_map[ViewType(i)]);
+	}
 	m_mprStyle->set_scenes(render_scenes);
 	m_cur_layout = LAYOUT_TCSV;
 	this->resizeEvent(nullptr);
@@ -136,6 +149,7 @@ void MultiImageView2::fullScreenSwitch(const ViewType& type, bool is_full /*= fa
 
 	if (is_full)
 	{
+		//full screen one scene
 		QMap<ViewType, PTR<ViewRenderScene>>::Iterator it = m_scene_map.begin();
 		while (it != m_scene_map.end())
 		{
@@ -147,14 +161,14 @@ void MultiImageView2::fullScreenSwitch(const ViewType& type, bool is_full /*= fa
 			else
 			{
 				m_scene_map[it.key()]->setViewport(0.0, 0.0, 0.0, 0.0);
-				m_scene_map[it.key()]->get_renderer()->DrawOff();
-				//m_scene_map[it.key()]->get_button_widget()->Off();
+				m_scene_map[it.key()]->get_renderer()->DrawOff(); //to improve vtk efficiency
 			}
 			it++;
 		}
 	}
 	else
 	{
+		//reback normal lay
 		if (m_cur_layout == LAYOUT_TCSV)
 			SwitchToTCSV();
 		else if (m_cur_layout == LAYOUT_TCS)

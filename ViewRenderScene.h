@@ -14,6 +14,10 @@ public:
 	//left top info = true、left bot、direction
 	void initiate(const bool& show_left_top /*= true*/, const bool& show_left_bot /*= true*/,bool show_direction= true);
 	void set_callback(vtkCommand* callback);
+	void set_button_widget_state();
+	void updataInfoWL(const double& wl, const double& ww);
+	void updataInfoSlicer(const int& cur_index, const int& slice_count);
+	void updataInfoPosition(const double& x, const double& y, const double& z);
 private:
 	ViewRenderScene(SPTR<vtkRenderWindow> rewin, const ViewType& viewType);
 

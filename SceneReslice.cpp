@@ -1,4 +1,5 @@
 #include "SceneReslice.h"
+#include "vtkImageProperty.h"
 
 PTR<SceneReslice> SceneReslice::New(SPTR<vtkImageData> data, SPTR<vtkMatrix4x4> mtx)
 {
@@ -47,6 +48,14 @@ void SceneReslice::doReslice(SPTR<vtkMatrix4x4> matrix)
 	m_color_map->Update();
 }
 
+void SceneReslice::get_window_level(double& ww, double& wl, double& defaultWW, double& defaultWL)
+{
+	ww = m_imgActor->GetProperty()->GetColorWindow();
+	wl = m_imgActor->GetProperty()->GetColorLevel();
+	defaultWW = m_wwDefault;
+	defaultWL = m_wlDefault;
+}
+
 SceneReslice::SceneReslice(SPTR<vtkImageData> data, SPTR<vtkMatrix4x4> mtx):m_roatMatx(mtx)
 {
 	data->GetDimensions(m_img_size);
@@ -77,7 +86,8 @@ SceneReslice::SceneReslice(SPTR<vtkImageData> data, SPTR<vtkMatrix4x4> mtx):m_ro
 	if (true) 
 	{
 		vtkNew<vtkLookupTable> colorTable;
-		colorTable->SetRange(0, 1000);
+		double* min_max = data->GetScalarRange();
+		colorTable->SetRange(min_max[0], min_max[1]);
 		colorTable->SetValueRange(0.0, 1.0);
 		colorTable->SetSaturationRange(0.0, 0.0);
 		colorTable->SetRampToLinear();
@@ -91,7 +101,10 @@ SceneReslice::SceneReslice(SPTR<vtkImageData> data, SPTR<vtkMatrix4x4> mtx):m_ro
 		m_imgActor = SPTR<vtkImageActor>::New();
 		m_imgActor->SetInputData(m_color_map->GetOutput());
 		m_imgActor->SetPosition(m_center[0], m_center[1], m_center[2]);
-	}
+
+		m_wwDefault = m_imgActor->GetProperty()->GetColorWindow();
+		m_wlDefault = m_imgActor->GetProperty()->GetColorLevel();
+	} 
 	else 
 	{
 		//New

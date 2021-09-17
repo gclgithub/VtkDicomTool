@@ -5,6 +5,35 @@
 #include "vtkTexturedButtonRepresentation2D.h"
 #include "vtkPNGReader.h"
 #include "vtkCommand.h"
+#include "vtkImageProperty.h"
+
+class StatusMessage
+{
+public:
+	static std::string FormatWl(int ww, int wl)
+	{
+		std::stringstream tmp;
+		tmp << "ww:" << ww << "/wl:" << wl;
+		return tmp.str();
+	}
+
+	static std::string FormatPosition(double x, double y, double z)
+	{
+		std::stringstream tmp;
+		tmp.precision(2);
+		tmp.setf(std::ios::fixed);
+		tmp << "Position:" << x << "," << y << "," << z;
+		return tmp.str();
+	}
+
+	static std::string FormatSlicer(int index, int count)
+	{
+		std::stringstream tmp;
+		tmp << "Slice:" << index << "/" << count;
+		return tmp.str();
+	}
+};
+
 ViewRenderScene::ViewRenderScene(SPTR<vtkRenderWindow> rewin, const ViewType& viewType): m_viewType(viewType)
 {
 	m_renderer = SPTR<vtkOpenGLRenderer>::New();
@@ -64,10 +93,19 @@ void ViewRenderScene::initiate()
 
 void ViewRenderScene::initiate(const bool& show_left_top, const bool& show_left_bot, bool show_direction)
 {
+	//init actor
 	if (show_direction)initSceneDirection();
 	if (show_left_top)initSceneLeftTopInfo();
 	if (show_left_bot)initSceneLeftBotInfo();
 	if (m_full_screen)initSceneButton();
+
+	//init data
+	double ww, wl, dww, dwl;
+	m_reslice->get_window_level(ww, wl, dwl, dww);
+	updataInfoWL(wl, ww);
+	updataInfoPosition(0, 0, 0);
+
+	updataInfoSlicer(10, 20);
 }
 
 void ViewRenderScene::set_callback(vtkCommand* callback)
@@ -75,6 +113,49 @@ void ViewRenderScene::set_callback(vtkCommand* callback)
 	if (m_full_screen) 
 	{
 		m_button_widget->AddObserver(vtkCommand::StateChangedEvent, callback);
+	}
+}
+
+void ViewRenderScene::set_button_widget_state()
+{
+	//Switch layout change button state
+	if (m_full_screen && m_button_widget) 
+	{
+		auto* rep = reinterpret_cast<vtkTexturedButtonRepresentation2D*> (m_button_widget->GetRepresentation());
+		rep->SetState(false);
+	}
+}
+
+void ViewRenderScene::updataInfoWL(const double& wl, const double& ww)
+{
+	m_reslice->get_imgActor()->GetProperty()->SetColorLevel(wl);
+	m_reslice->get_imgActor()->GetProperty()->SetColorWindow(ww);
+
+	if (m_wlww_actor) 
+	{
+		std::string msg = StatusMessage::FormatWl(wl, ww);
+		auto* mapper = reinterpret_cast<vtkTextMapper*> (m_wlww_actor->GetMapper());
+		mapper->SetInput(msg.c_str());
+	}
+}
+
+void ViewRenderScene::updataInfoSlicer(const int& cur_index, const int& slice_count)
+{
+	if (m_slicer_actor) 
+	{
+		std::string msg = StatusMessage::FormatSlicer(cur_index, slice_count);
+		auto* mapper = reinterpret_cast<vtkTextMapper*> (m_slicer_actor->GetMapper());
+		mapper->SetInput(msg.c_str());
+	}
+}
+
+void ViewRenderScene::updataInfoPosition(const double& x, const double& y, const double& z)
+{
+	if (m_position_actor) 
+	{
+		std::string msg = StatusMessage::FormatPosition(x, y,z);
+		auto* mapper = reinterpret_cast<vtkTextMapper*> (m_position_actor->GetMapper());
+		mapper->SetInput(msg.c_str());
 	}
 }
 
@@ -204,8 +285,7 @@ SPTR<vtkCamera> ViewRenderScene::getCamera()
 void ViewRenderScene::resetCamera()
 {
 	auto ps = getCamera()->GetFocalPoint();
-	std::cout << "GetFocalPoint:" << ps[0] << "," << ps[1] << "," << ps[2] << std::endl;
-
+	//std::cout << "GetFocalPoint:" << ps[0] << "," << ps[1] << "," << ps[2] << std::endl;
 	if (m_camParam != nullptr && m_camParam->hasRecorded())
 	{
 		m_camParam->apply(getCamera());
@@ -367,6 +447,10 @@ void ViewRenderScene::resize(const int& width, const int& height)
 		bds[4] = bds[5] = 0.0;
 		rep->PlaceWidget(bds);
 		rep->BuildRepresentation();
+		m_button_widget->ProcessEventsOff();
+		m_button_widget->Off();
+
+		m_button_widget->Render();
 	}
 	//std::cout << "width:" << m_width << ",height:" << m_height << std::endl;
 }

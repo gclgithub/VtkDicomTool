@@ -7,6 +7,7 @@ class MPRStyle : public vtkInteractorStyleImage
 public:
 	static MPRStyle* New();
 	vtkTypeMacro(MPRStyle, vtkInteractorStyleImage);
+	void initiate();
 	enum MOUSEFUNC
 	{
 		POINTER,
@@ -38,4 +39,6 @@ private:
 
 private:
 	VarMacro(PTR<ViewRenderScene>, last_scene);
+
+
 };

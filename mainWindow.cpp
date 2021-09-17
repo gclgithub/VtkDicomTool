@@ -55,5 +55,8 @@ void mianWindow::OnClose()
 
 void mianWindow::OnSwitchLayout()
 {
-	m_views->SwitchToTCS();
+	if (m_views->get_cur_layout() == LAYOUT_TCSV)
+		m_views->SwitchToTCS();
+	else if(m_views->get_cur_layout() == LAYOUT_TCS)
+		m_views->SwitchToTCSV();
 }
