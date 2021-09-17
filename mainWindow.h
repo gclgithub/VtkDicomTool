@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <QMainWindow>
-class MultiImageView;
+class MultiImageView2;
 namespace Ui {
     class MainWindow_ui;
 }
@@ -16,10 +16,11 @@ public:
 
 public slots:
     void OnClose();
+    void OnSwitchLayout();
 private:
     static mianWindow*self;
     QTimer *main_timer;
     QScopedPointer<Ui::MainWindow_ui> ui_;
 
-    MultiImageView* views_ = nullptr;
+    MultiImageView2* m_views = nullptr;
 };

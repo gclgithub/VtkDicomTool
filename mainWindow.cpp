@@ -14,8 +14,7 @@ mianWindow::mianWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     //setStyleSheet(dtcp::QHelper::getStyleQss("mianWindow"));
     ui_->setupUi(this);
     self = this;
-   
-    //connect(ui_->toolButtonClose, &QPushButton::clicked, this, &mianWindow::OnClose);
+    connect(ui_->switch_btn, &QPushButton::clicked, this, &mianWindow::OnSwitchLayout);
     //connect(ui_->toolButtonHelp, SIGNAL(clicked()), this, SLOT(OnHelp()));
 }
 
@@ -35,9 +34,8 @@ void mianWindow::initiate()
 	bool show_one_window = true;
 	if (show_one_window) 
 	{
-		MultiImageView2* views = new MultiImageView2(ui_->main_widget);
-		views->initiate(reader->GetOutput());
-		views->showCrossViews();
+		m_views = new MultiImageView2(ui_->main_widget);
+		m_views->initiate(reader->GetOutput());
 	}
 	else 
 	{
@@ -53,4 +51,9 @@ void mianWindow::initiate()
 void mianWindow::OnClose()
 {
     QCoreApplication::quit();
+}
+
+void mianWindow::OnSwitchLayout()
+{
+	m_views->SwitchToTCS();
 }

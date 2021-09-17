@@ -70,6 +70,14 @@ void ViewRenderScene::initiate(const bool& show_left_top, const bool& show_left_
 	if (m_full_screen)initSceneButton();
 }
 
+void ViewRenderScene::set_callback(vtkCommand* callback)
+{
+	if (m_full_screen) 
+	{
+		m_button_widget->AddObserver(vtkCommand::StateChangedEvent, callback);
+	}
+}
+
 void ViewRenderScene::initSceneLeftTopInfo()
 {
 	int font_text = 16;
@@ -157,30 +165,12 @@ void ViewRenderScene::initSceneButton()
 	buttonRepresentation->SetNumberOfStates(2);
 	buttonRepresentation->SetButtonTexture(0, image1);
 	buttonRepresentation->SetButtonTexture(1, image2);
-
-	//zoomCallback* callback = zoomCallback::New(view);
+	buttonRepresentation->SetPlaceFactor(1);
 
 	m_button_widget = SPTR<vtkButtonWidget>::New();
 	m_button_widget->SetInteractor(m_interactor);
 	m_button_widget->SetCurrentRenderer(m_renderer);
 	m_button_widget->SetRepresentation(buttonRepresentation);
-
-	//m_button_widget->AddObserver(vtkCommand::StateChangedEvent, callback);
-
-	vtkNew<vtkCoordinate> upperRight;
-	upperRight->SetCoordinateSystemToNormalizedDisplay();
-	upperRight->SetValue(1.0, 1.0);
-
-	double bds[6];
-	bds[0] = m_width - 30;
-	bds[1] = m_width - 10;
-	bds[2] = 10;
-	bds[3] = 30;
-	bds[4] = bds[5] = 0.0;
-
-	//Scale to 1, default is .5
-	buttonRepresentation->SetPlaceFactor(1);
-	buttonRepresentation->PlaceWidget(bds);
 	m_button_widget->ProcessEventsOn();
 	m_button_widget->On();
 }
@@ -376,8 +366,8 @@ void ViewRenderScene::resize(const int& width, const int& height)
 		bds[3] = 30;
 		bds[4] = bds[5] = 0.0;
 		rep->PlaceWidget(bds);
+		rep->BuildRepresentation();
 	}
-
 	//std::cout << "width:" << m_width << ",height:" << m_height << std::endl;
 }
 

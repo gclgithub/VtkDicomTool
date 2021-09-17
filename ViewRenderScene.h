@@ -13,6 +13,7 @@ public:
 	void initiate();
 	//left top info = true、left bot、direction
 	void initiate(const bool& show_left_top /*= true*/, const bool& show_left_bot /*= true*/,bool show_direction= true);
+	void set_callback(vtkCommand* callback);
 private:
 	ViewRenderScene(SPTR<vtkRenderWindow> rewin, const ViewType& viewType);
 
@@ -27,7 +28,7 @@ private:
 	VarMacro(SPTR<vtkActor2D>, wlww_actor)
 
 	SetMacro(SPTR<vtkRenderWindowInteractor>, interactor)
-	VarMacro(SPTR<vtkButtonWidget>, button_widget)
+	GetMacro(SPTR<vtkButtonWidget>, button_widget)
 	SetMacro(bool, full_screen)
 	GetMacro(ViewType, viewType)
 private:

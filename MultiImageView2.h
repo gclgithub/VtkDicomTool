@@ -5,6 +5,7 @@
 #include "MousePicker.h"
 #include "QVTKOpenGLNativeWidget.h"
 #include "ViewRenderScene.h"
+class fullScreenCallback;
 class MultiImageView2 : public QWidget
 {
 	Q_OBJECT
@@ -13,35 +14,39 @@ public:
 	virtual ~MultiImageView2();
 	void initiate(SPTR<vtkImageData> img_data);
 
-	//显示某个视口，单个独占，撑满整个窗口空间
-	void showSingleView(const ViewType& type);
+	////显示某个视口，单个独占，撑满整个窗口空间
+	//void showSingleView(const ViewType& type);
+	void SwitchToTCS();
 	//显示交叉四视口模式
-	void showCrossViews();
-
-	QWidget* create_view_container(QWidget* view);
-
-	void show_view(const double& leftX, const double& topY, const double& rightX, const double& bottomY, const ViewType& type);
+	void SwitchToTCSV();
+	void fullScreenSwitch(const ViewType& type,bool is_full = false);
 protected:
 	void resizeEvent(QResizeEvent* event);
 private:
-	VarMacro(PTR<ViewRenderScene>, scene_tra)
-	VarMacro(PTR<ViewRenderScene>, scene_cor)
-	VarMacro(PTR<ViewRenderScene>, scene_sag)
-	VarMacro(PTR<ViewRenderScene>, scene_vom)
-
-	//QBoxLayout* multi_widget_layout_;
-	//QWidget* view_container_t_;
-	//QWidget* view_container_c_;
-	//QWidget* view_container_s_;
-	//QWidget* view_container_v_;
-
-	//QWidget* view_container_any_;
-	//QWidget* view_container_;
-
+	QMap<ViewType, PTR<ViewRenderScene>> m_scene_map;
 	QVTKOpenGLNativeWidget* qvtk_widget_ = nullptr;
 	SPTR<MousePicker> mouse_picker_;
 	MPRStyle* m_mprStyle = nullptr;
 	SPTR<vtkImageData> img_data_ = nullptr;
 	Layout m_cur_layout = LAYOUT_NONE;
+
+	fullScreenCallback* m_full_screen_callback;
 };
 
+class fullScreenCallback : public vtkCommand
+{
+public:
+	static fullScreenCallback* New(MultiImageView2* view)
+	{
+		return new fullScreenCallback(view);
+	}
+	virtual void Execute(vtkObject* caller, unsigned long, void*);
+	void set_scenes(QMap<ViewType, PTR<ViewRenderScene>> scenes) 
+	{
+		m_scene_map = scenes;
+	}
+private:
+	fullScreenCallback(MultiImageView2* view) { m_view = view; };
+	QMap<ViewType, PTR<ViewRenderScene>> m_scene_map;
+	MultiImageView2* m_view = nullptr;
+};
