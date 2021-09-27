@@ -1,7 +1,10 @@
 ﻿#pragma once 
-#include "vtkPointPicker.h" 
+//#include "vtkPropPicker.h" 
+#include "vtkCellPicker.h" 
 #include "BasicVtkDefine.h"
-class MousePicker : public vtkPointPicker
+#include "SceneCrossLine.h"
+#include "SceneReslice.h"
+class MousePicker : public vtkCellPicker
 {
 public:
 	static SPTR<MousePicker> New();
@@ -17,9 +20,14 @@ public:
 		real_origin_[2] = origin[2];
 	};
 
-	void getWorldPositionFromDisplay(double x, double y, double* out , SPTR<vtkImageReslice> reslicer,SPTR<vtkRenderer> renderer);
-	void getDcmPositionFromDisplay(double x, double y, double* out, SPTR<vtkImageReslice> reslicer,SPTR<vtkRenderer> renderer);
+	void getWorldPositionFromDisplay(double x, double y, double* out , PTR<SceneReslice> reslicer,SPTR<vtkRenderer> renderer);
+	void getDcmPositionFromDisplay(double x, double y, double* out, PTR<SceneReslice> reslicer,SPTR<vtkRenderer> renderer);
 	void getDcmPositionFromWorld(const double xyz[3], double* out);
+
+
+public:
+	void set_crossline(PTR<SceneCrossLine> cross_line);
+
 protected:
 	//构造函数
 	MousePicker();
@@ -27,6 +35,6 @@ private:
 	SPTR<vtkImageData> img_data_;
 	SPTR<vtkMatrix4x4> dicom_mat_;
 	double real_origin_[3];
-
+	PTR<SceneCrossLine> m_cross_line;
 };
 

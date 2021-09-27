@@ -7,6 +7,9 @@
 #include "QtWidgets/qwidget.h"
 #include "QResizeEvent"
 #include "vtkTexturedButtonRepresentation2D.h"
+#include "SceneCrossLine.h"
+
+
 MultiImageView2::MultiImageView2(QWidget* parent):QWidget(parent)
 {
 	qvtk_widget_ = new QVTKOpenGLNativeWidget;
@@ -20,13 +23,15 @@ MultiImageView2::MultiImageView2(QWidget* parent):QWidget(parent)
 	parent->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	layout->addWidget(qvtk_widget_);
 
+	m_mouse_picker = MousePicker::New();
+
 	m_mprStyle = MPRStyle::New();
+	m_mprStyle->set_picker(m_mouse_picker);
 	m_mprStyle->initiate();
 	//m_mprStyle->setRenderArea(parent->pos(), parent->size());
 	qvtk_widget_->interactor()->SetInteractorStyle(m_mprStyle);
 
 
-	mouse_picker_ = MousePicker::New();
 	m_full_screen_callback = fullScreenCallback::New(this);
 	m_cur_layout = LAYOUT_NONE;
 
@@ -41,21 +46,29 @@ MultiImageView2::~MultiImageView2()
 
 void MultiImageView2::initiate(SPTR<vtkImageData> img_data)
 {
+	m_cross_line = SceneCrossLine::New();
 	img_data_ = img_data;
 	vtkNew<vtkMatrix4x4> mat;
 	double* m_posCenter = new double[3]{ 0,0,0 };
 	for (int i = 0; i < 4; i++) 
 	{
 		auto scene = ViewRenderScene::New(qvtk_widget_->renderWindow(), ViewType(i));
-		scene->resetReslicer(img_data_, mat, m_posCenter);
 		scene->set_full_screen(true);
 		if (i == ViewType::VOL_M)
+		{
 			scene->initiate();
+		}
 		else
+		{
+			scene->initReslicer(img_data_, mat, m_posCenter);
+			scene->add_crossline(m_cross_line);
 			scene->initiate(true, true, true);
+		}
 		scene->set_callback(m_full_screen_callback);
 		m_scene_map[ViewType(i)] = scene;
 	}
+	m_mouse_picker->set_crossline(m_cross_line);
+
 	SwitchToTCSV();
 	m_full_screen_callback->set_scenes(m_scene_map);
 }
@@ -80,7 +93,6 @@ void MultiImageView2::resizeEvent(QResizeEvent* event)
 		m_scene_map[SAG_M]->resize(width * 0.4, height * 0.5);
 	}
 	qvtk_widget_->renderWindow()->Modified();//must add
-	//qvtk_widget_->interactor()->Render();
 	qvtk_widget_->renderWindow()->Render();
 }
 

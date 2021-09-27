@@ -8,8 +8,13 @@ public:
 	void moveReslice(int value);
 	void doReslice();
 	void doReslice(SPTR<vtkMatrix4x4> matrix);
-	double* get_center() { return m_center; }
+
 	void get_window_level(double& ww, double& wl, double& defaultWW, double& defaultWL);
+	void get_slicer_num(int& max_slicer, int& cur_slicer);
+	void resetReslicer();
+
+	double* get_center() { return m_center; }
+	double* get_spacing() { return m_img_spacing; }
 private:
 	SceneReslice(SPTR<vtkImageData> data, SPTR<vtkMatrix4x4> mtx);
 private:
@@ -17,6 +22,8 @@ private:
 	GetMacro(SPTR<vtkImageActor>, imgActor)
 	GetMacro(SPTR<vtkImageMapToColors>, color_map)
 	GetMacro(SPTR<vtkMatrix4x4>, roatMatx)
+		
+
 
 	int m_img_size[3];
 	double m_img_spacing[3];

@@ -2,6 +2,7 @@
 #include "vtkInteractorStyleImage.h" 
 #include "BasicVtkDefine.h"
 class ViewRenderScene;
+class MousePicker;
 class MPRStyle : public vtkInteractorStyleImage
 {
 public:
@@ -14,8 +15,11 @@ public:
 		DOLLY,
 		PAN,
 		GRAYLEVEL,
+		CrossLine,
 		ROTATE,
-		SPIN
+		SPIN,
+		DISTANCE,
+		ANGLE
 	}MouseFunction;
 protected:
 	virtual void OnKeyDown()override;
@@ -34,11 +38,13 @@ protected:
 	//virtual void OnEnter() override;
 
 private:
-	SetGetMacro(std::vector<PTR<ViewRenderScene>>, scenes);
 	PTR<ViewRenderScene> GetCurRenderScene();
-
+	void moveReslicer(PTR<ViewRenderScene> ren_scene,int slicer);
+	void moveCrossLine(double* pos);
 private:
+	SetGetMacro(std::vector<PTR<ViewRenderScene>>, scenes);
 	VarMacro(PTR<ViewRenderScene>, last_scene);
+	SetGetMacro(SPTR<MousePicker>, picker)
 
-
+	vtkActor* m_cur_actor = nullptr;
 };

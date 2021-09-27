@@ -6,7 +6,7 @@
 #include "vtkPNGReader.h"
 #include "vtkCommand.h"
 #include "vtkImageProperty.h"
-
+#include "SceneCrossLine.h"
 class StatusMessage
 {
 public:
@@ -105,7 +105,7 @@ void ViewRenderScene::initiate(const bool& show_left_top, const bool& show_left_
 	updataInfoWL(wl, ww);
 	updataInfoPosition(0, 0, 0);
 
-	updataInfoSlicer(10, 20);
+	updataInfoSlicer();
 }
 
 void ViewRenderScene::set_callback(vtkCommand* callback)
@@ -139,13 +139,21 @@ void ViewRenderScene::updataInfoWL(const double& wl, const double& ww)
 	}
 }
 
-void ViewRenderScene::updataInfoSlicer(const int& cur_index, const int& slice_count)
+void ViewRenderScene::updataInfoSlicer()
 {
-	if (m_slicer_actor) 
+	if (m_slicer_actor && m_reslice)
 	{
+		// change info
+		int cur_index, slice_count;
+		m_reslice->get_slicer_num(slice_count, cur_index);
 		std::string msg = StatusMessage::FormatSlicer(cur_index, slice_count);
 		auto* mapper = reinterpret_cast<vtkTextMapper*> (m_slicer_actor->GetMapper());
 		mapper->SetInput(msg.c_str());
+
+		//change crossline position
+		if (m_cross_line->get_line_actor_list().size() != 3)return;
+		auto* res_pos = m_reslice->get_imgActor()->GetPosition();
+		m_cross_line->UpdateCrossLine(res_pos, m_viewType);
 	}
 }
 
@@ -156,6 +164,52 @@ void ViewRenderScene::updataInfoPosition(const double& x, const double& y, const
 		std::string msg = StatusMessage::FormatPosition(x, y,z);
 		auto* mapper = reinterpret_cast<vtkTextMapper*> (m_position_actor->GetMapper());
 		mapper->SetInput(msg.c_str());
+	}
+}
+
+void ViewRenderScene::add_crossline(PTR<SceneCrossLine> cross_line)
+{
+	m_cross_line = cross_line;
+	//show crossline
+	switch (m_viewType)
+	{
+	case TRA_M:
+	{
+		m_renderer->AddActor(cross_line->get_line_actor_list()[0]);
+		m_renderer->AddActor(cross_line->get_line_actor_list()[1]);
+		break;
+	}
+	case COR_M:
+	{
+		m_renderer->AddActor(cross_line->get_line_actor_list()[0]);
+		m_renderer->AddActor(cross_line->get_line_actor_list()[2]);
+		break;
+	}
+	case SAG_M:
+	{
+		m_renderer->AddActor(cross_line->get_line_actor_list()[1]);
+		m_renderer->AddActor(cross_line->get_line_actor_list()[2]);
+		break;
+	}
+	default:
+		break;
+	}
+
+	if (m_viewType == TRA_M) 
+	{
+		//set position
+		auto imgData = m_reslice->get_imgActor()->GetInput();
+		auto size = imgData->GetDimensions();
+		auto spacing = imgData->GetSpacing();
+		auto origin = imgData->GetOrigin();
+
+		std::vector<double> bounds = {
+		origin[0] - 30,origin[0] + size[0] * spacing[0] + 30,
+		origin[1] - 30,origin[1] + size[1] * spacing[1] + 30,
+		origin[2] - 30,origin[2] + size[2] * spacing[2] + 30, };
+
+		cross_line->set_bounds(bounds);
+		cross_line->resetCrossLine(m_reslice->get_center());
 	}
 }
 
@@ -293,6 +347,7 @@ void ViewRenderScene::resetCamera()
 	}
 	else
 	{
+		auto* center = m_reslice->get_center();
 		auto imgData = m_reslice->get_imgActor()->GetInput();
 		auto size = imgData->GetDimensions();
 		auto spacing = imgData->GetSpacing();
@@ -302,8 +357,8 @@ void ViewRenderScene::resetCamera()
 		auto zoom_factor = rx > ry ? rx : ry;
 		getCamera()->SetParallelScale(zoom_factor*0.5);
 		getCamera()->ParallelProjectionOn();
-		getCamera()->SetFocalPoint(0, 0, 0);
-		getCamera()->SetPosition(0, 0, 1);
+		getCamera()->SetFocalPoint(center);
+		getCamera()->SetPosition(m_cam_pos);
 	}
 }
 
@@ -333,7 +388,7 @@ void ViewRenderScene::setCrossTargets(ViewRenderScene* view1, ViewRenderScene* v
 	//m_crossLine->setCross(view1->getCrossLine(), view2->getCrossLine());
 }
 
-void ViewRenderScene::resetReslicer(SPTR<vtkImageData> imgData, SPTR<vtkMatrix4x4> vtkmat, double* pos)
+void ViewRenderScene::initReslicer(SPTR<vtkImageData> imgData, SPTR<vtkMatrix4x4> vtkmat, double* pos)
 {
 	m_reslice = SceneReslice::New(imgData, vtkmat);
 	if (true) 
@@ -345,9 +400,9 @@ void ViewRenderScene::resetReslicer(SPTR<vtkImageData> imgData, SPTR<vtkMatrix4x
 		{
 		case ViewType::COR_M:
 			m_reslice->get_imgActor()->RotateX(90);
-			m_cam_pos[0] = pos[0];
-			m_cam_pos[1] = pos[1] + 3000;
-			m_cam_pos[2] = pos[2];
+			m_cam_pos[0] = center[0];
+			m_cam_pos[1] = center[1] + 3000;
+			m_cam_pos[2] = center[2];
 			cam->SetPosition(m_cam_pos[0], m_cam_pos[1], m_cam_pos[2]);
 			cam->SetFocalPoint(center);
 			cam->ParallelProjectionOn();
@@ -355,18 +410,18 @@ void ViewRenderScene::resetReslicer(SPTR<vtkImageData> imgData, SPTR<vtkMatrix4x
 			break;
 		case ViewType::SAG_M:
 			m_reslice->get_imgActor()->RotateY(90);
-			m_cam_pos[0] = pos[0] + 3000;
-			m_cam_pos[1] = pos[1];
-			m_cam_pos[2] = pos[2];
+			m_cam_pos[0] = center[0] + 3000;
+			m_cam_pos[1] = center[1];
+			m_cam_pos[2] = center[2];
 			cam->SetPosition(m_cam_pos[0], m_cam_pos[1], m_cam_pos[2]);
 			cam->SetFocalPoint(center);
 			cam->ParallelProjectionOn();
 			cam->SetViewUp(0, 0, -1);
 			break;
 		case ViewType::TRA_M:
-			m_cam_pos[0] = pos[0];
-			m_cam_pos[1] = pos[1];
-			m_cam_pos[2] = pos[2] + 3000;
+			m_cam_pos[0] = center[0];
+			m_cam_pos[1] = center[1];
+			m_cam_pos[2] = center[2] + 3000;
 			cam->SetPosition(m_cam_pos[0], m_cam_pos[1], m_cam_pos[2]);
 			cam->SetFocalPoint(center);
 			cam->ParallelProjectionOn();
@@ -388,6 +443,24 @@ void ViewRenderScene::resetReslicer(SPTR<vtkImageData> imgData, SPTR<vtkMatrix4x
 		m_reslice->get_imgActor()->PickableOff();
 
 		auto cam = getCamera();
+		resetCamera();
+	}
+}
+
+void ViewRenderScene::resetScene()
+{
+	//reset slicer
+	if (m_viewType != VOL_M) 
+	{
+		m_reslice->resetReslicer();
+		updataInfoSlicer();
+
+		//reset wl/ww
+		double ww, wl, dww, dwl;
+		m_reslice->get_window_level(ww, wl, dww, dwl);
+		updataInfoWL(dwl, dww);
+
+		//reset camera
 		resetCamera();
 	}
 }

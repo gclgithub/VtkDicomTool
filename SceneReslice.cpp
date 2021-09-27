@@ -56,14 +56,47 @@ void SceneReslice::get_window_level(double& ww, double& wl, double& defaultWW, d
 	defaultWL = m_wlDefault;
 }
 
+void SceneReslice::get_slicer_num(int& max_slicer, int& cur_slicer)
+{
+	auto pos = m_imgActor->GetPosition();
+	auto orie = m_imgActor->GetOrientation();
+	if (orie[0] == 90)
+	{
+		max_slicer = m_img_size[1];
+		int delta = pos[1] / m_img_spacing[1];
+		cur_slicer = max_slicer - delta;
+	}
+	else if (orie[1] == 90)
+	{
+		max_slicer = m_img_size[0];
+		int delta = pos[0] / m_img_spacing[0];
+		cur_slicer = max_slicer - delta;
+	}
+	else
+	{
+		max_slicer = m_img_size[2];
+		int delta = pos[2] / m_img_spacing[2];
+		cur_slicer = max_slicer - delta;
+	}
+}
+
+void SceneReslice::resetReslicer()
+{
+	if (m_reslice) 
+	{
+		m_imgActor->SetPosition(m_center[0], m_center[1], m_center[2]);
+		doReslice();
+	}
+}
+
 SceneReslice::SceneReslice(SPTR<vtkImageData> data, SPTR<vtkMatrix4x4> mtx):m_roatMatx(mtx)
 {
 	data->GetDimensions(m_img_size);
 	data->GetSpacing(m_img_spacing);
 	data->GetOrigin(m_img_origin);
-	m_center[0] = m_img_origin[0] + m_img_spacing[0] * 0.5 * m_img_size[0];
-	m_center[1] = m_img_origin[1] + m_img_spacing[1] * 0.5 * m_img_size[1];
-	m_center[2] = m_img_origin[2] + m_img_spacing[2] * 0.5 * m_img_size[2];
+	m_center[0] = m_img_origin[0] + int(m_img_size[0] * 0.5 - 0.5) * m_img_spacing[0];
+	m_center[1] = m_img_origin[1] + int(m_img_size[1] * 0.5 - 0.5) * m_img_spacing[1];
+	m_center[2] = m_img_origin[2] + int(m_img_size[2] * 0.5 - 0.5) * m_img_spacing[2];
 
 	static double axialElements[16] = {
 	1, 0, 0, 0,
@@ -82,7 +115,6 @@ SceneReslice::SceneReslice(SPTR<vtkImageData> data, SPTR<vtkMatrix4x4> mtx):m_ro
 	m_reslice->SetOutputDimensionality(2);
 	m_reslice->SetResliceAxes(resliceAxes);
 	m_reslice->SetInterpolationModeToLinear();
-
 	if (true) 
 	{
 		vtkNew<vtkLookupTable> colorTable;

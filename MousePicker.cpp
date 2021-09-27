@@ -10,8 +10,10 @@ SPTR<MousePicker> MousePicker::New()
 }
 
 //构造函数
-MousePicker::MousePicker() :vtkPointPicker()
+MousePicker::MousePicker() :vtkCellPicker()
 {
+	this->SetTolerance(0.005);
+	//this->PickFromListOn(); add will pick bug
 }
 
 //析构函数
@@ -35,37 +37,50 @@ void MousePicker::initiate()
 	dicom_mat_->SetElement(2, 3, size[2] * spacing[2]);
 }
 
-void MousePicker::getWorldPositionFromDisplay(double x, double y, double* out, SPTR<vtkImageReslice> reslicer, SPTR<vtkRenderer> renderer)
+void MousePicker::getWorldPositionFromDisplay(double x, double y, double* out, PTR<SceneReslice> reslicer, SPTR<vtkRenderer> renderer)
 {
-
-	double centers[3];
-	reslicer->GetResliceAxesOrigin(centers);
-	std::cout << "centers:" << centers[0] << "," << centers[1] << "," << centers[2] << std::endl;
-
+	//pick
 	this->Pick(x, y, 0, renderer);
 	auto value = GetPickPosition();
-	out[0] = value[0];
-	out[1] = value[1];
-	out[2] = centers[2];
+
+	auto actor = reslicer->get_imgActor();
+	auto pos = actor->GetPosition();
+	auto orie = actor->GetOrientation();
+	if (orie[0] == 90)
+	{
+		out[0] = value[0];
+		out[1] = pos[1];
+		out[2] = value[2];
+	}
+	else if (orie[1] == 90)
+	{
+		out[0] = pos[0];
+		out[1] = value[1];
+		out[2] = value[2];
+	}
+	else
+	{
+		out[0] = value[0];
+		out[1] = value[1];
+		out[2] = pos[2];
+	}
 }
 
-void MousePicker::getDcmPositionFromDisplay(double x, double y, double* out, SPTR<vtkImageReslice> reslicer, SPTR<vtkRenderer> renderer)
+void MousePicker::getDcmPositionFromDisplay(double x, double y, double* out, PTR<SceneReslice> reslicer, SPTR<vtkRenderer> renderer)
 {
-	double centers[3];
-	reslicer->GetResliceAxesOrigin(centers);
-	std::cout << "centers:" << centers[0] << "," << centers[1] << "," << centers[2] << std::endl;
+	//if (auto actor = reslicer->get_imgActor())
+	//{
+	//	double pos[] = { 0,0,0 };
+	//	getWorldPositionFromDisplay(pos);
+	//	double in[4] = { pos[0],pos[1],pos[2],1 };
 
-	double world_pos[3];
-	this->Pick(x, y, 0, renderer);
-	this->GetPickPosition(world_pos);
-	double in[4] = { world_pos[0],world_pos[1],centers[2],1 };
-
-	vtkNew<vtkMatrix4x4> invert_mat;
-	vtkMatrix4x4::Invert(dicom_mat_, invert_mat);
-	auto value = invert_mat->MultiplyDoublePoint(in);
-	out[0] = value[0] + real_origin_[0];
-	out[1] = value[1] + real_origin_[1];
-	out[2] = value[2] + real_origin_[2];
+	//	vtkNew<vtkMatrix4x4> invert_mat;
+	//	vtkMatrix4x4::Invert(dicom_mat_, invert_mat);
+	//	auto value = invert_mat->MultiplyDoublePoint(in);
+	//	out[0] = value[0] + real_origin_[0];
+	//	out[1] = value[1] + real_origin_[1];
+	//	out[2] = value[2] + real_origin_[2];
+	//}
 }
 
 void MousePicker::getDcmPositionFromWorld(const double xyz[3], double* out)
@@ -77,4 +92,12 @@ void MousePicker::getDcmPositionFromWorld(const double xyz[3], double* out)
 	out[0] = value[0] + real_origin_[0];
 	out[1] = value[1] + real_origin_[1];
 	out[2] = value[2] + real_origin_[2];
+}
+
+void MousePicker::set_crossline(PTR<SceneCrossLine> cross_line)
+{
+	m_cross_line = cross_line;
+	AddPickList(m_cross_line->get_line_actor_list()[0]);
+	AddPickList(m_cross_line->get_line_actor_list()[1]);
+	AddPickList(m_cross_line->get_line_actor_list()[2]);
 }

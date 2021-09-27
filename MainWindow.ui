@@ -70,23 +70,23 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="btn_reset">
         <property name="text">
-         <string>PushButton</string>
+         <string>Reset</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="btn_angle">
         <property name="text">
-         <string>PushButton</string>
+         <string>Angle</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QPushButton" name="btn_ruler">
         <property name="text">
-         <string>PushButton</string>
+         <string>Ruler</string>
         </property>
        </widget>
       </item>

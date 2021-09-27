@@ -4,6 +4,7 @@
 #include "vtkButtonWidget.h"
 #include "SceneReslice.h"
 class Navi3DCameraParams;
+class SceneCrossLine;
 class ViewRenderScene
 {
 public:
@@ -11,16 +12,20 @@ public:
 	virtual ~ViewRenderScene();
 	void resize(const int& width, const int& height);
 	void initiate();
+	void resetScene();
 	//left top info = true、left bot、direction
 	void initiate(const bool& show_left_top /*= true*/, const bool& show_left_bot /*= true*/,bool show_direction= true);
 	void set_callback(vtkCommand* callback);
 	void set_button_widget_state();
 	void updataInfoWL(const double& wl, const double& ww);
-	void updataInfoSlicer(const int& cur_index, const int& slice_count);
+	void updataInfoSlicer();
 	void updataInfoPosition(const double& x, const double& y, const double& z);
-private:
-	ViewRenderScene(SPTR<vtkRenderWindow> rewin, const ViewType& viewType);
 
+	//crossline
+	void add_crossline(PTR<SceneCrossLine> cross_line);
+protected:
+	ViewRenderScene(SPTR<vtkRenderWindow> rewin, const ViewType& viewType);
+private:
 	GetMacro(SPTR<vtkOpenGLRenderer>, renderer)
 	GetMacro(PTR<SceneReslice>, reslice)
 
@@ -35,6 +40,9 @@ private:
 	GetMacro(SPTR<vtkButtonWidget>, button_widget)
 	SetMacro(bool, full_screen)
 	GetMacro(ViewType, viewType)
+
+	//crossline
+	GetMacro(PTR<SceneCrossLine>, cross_line)
 private:
 	void initSceneDirection();
 	void initSceneLeftTopInfo();
@@ -51,8 +59,7 @@ public:
 	//设置另外两个交叉的平面，二维视口
 	void  setCrossTargets(ViewRenderScene* view1, ViewRenderScene* view2);
 	//重新设置重建平面对象 ，二维视口
-	void resetReslicer(SPTR<vtkImageData> imgData, SPTR<vtkMatrix4x4> vtkmat, double * pos);
-	//重新设置volume对象，三维视口
+	void initReslicer(SPTR<vtkImageData> imgData, SPTR<vtkMatrix4x4> vtkmat, double* pos);
 private:
 	Navi3DCameraParams* m_camParam = nullptr;
 	void _initCamrea();

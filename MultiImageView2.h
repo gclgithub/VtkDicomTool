@@ -5,6 +5,7 @@
 #include "MousePicker.h"
 #include "QVTKOpenGLNativeWidget.h"
 #include "ViewRenderScene.h"
+class SceneCrossLine;
 class fullScreenCallback;
 class MultiImageView2 : public QWidget
 {
@@ -24,9 +25,11 @@ protected:
 	void resizeEvent(QResizeEvent* event);
 private:
 	GetMacro(Layout, cur_layout)
+	VarMacro(PTR<SceneCrossLine>, cross_line)
+
 	QMap<ViewType, PTR<ViewRenderScene>> m_scene_map;
 	QVTKOpenGLNativeWidget* qvtk_widget_ = nullptr;
-	SPTR<MousePicker> mouse_picker_;
+	SPTR<MousePicker> m_mouse_picker;
 	MPRStyle* m_mprStyle = nullptr;
 	SPTR<vtkImageData> img_data_ = nullptr;
 	fullScreenCallback* m_full_screen_callback;
