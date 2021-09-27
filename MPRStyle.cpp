@@ -54,7 +54,7 @@ void MPRStyle::OnMouseMove()
 		auto res = render_scene->get_reslice();
 		m_picker->getWorldPositionFromDisplay(pos[0], pos[1], world_pos, res, render_scene->get_renderer());
 		render_scene->updataInfoPosition(world_pos[0], world_pos[1], world_pos[2]);
-		std::cout << "pos:" << pos[0] << "," << pos[1] << ",world_pos:" << world_pos[0] << "," << world_pos[1] << "," << world_pos[2] << std::endl;
+		//std::cout << "pos:" << pos[0] << "," << pos[1] << ",world_pos:" << world_pos[0] << "," << world_pos[1] << "," << world_pos[2] << std::endl;
 
 		switch (MouseFunction)
 		{

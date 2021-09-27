@@ -188,6 +188,15 @@ void MultiImageView2::fullScreenSwitch(const ViewType& type, bool is_full /*= fa
 	}
 }
 
+void MultiImageView2::ResetScene()
+{
+	m_scene_map[TRA_M]->resetScene();
+	m_scene_map[COR_M]->resetScene();
+	m_scene_map[SAG_M]->resetScene();
+
+	qvtk_widget_->interactor()->Render();
+}
+
 void fullScreenCallback::Execute(vtkObject* caller, unsigned long, void*)
 {
 	vtkButtonWidget* buttonWidget = reinterpret_cast<vtkButtonWidget*>(caller);

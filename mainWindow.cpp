@@ -15,7 +15,7 @@ mianWindow::mianWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     ui_->setupUi(this);
     self = this;
     connect(ui_->switch_btn, &QPushButton::clicked, this, &mianWindow::OnSwitchLayout);
-    //connect(ui_->toolButtonHelp, SIGNAL(clicked()), this, SLOT(OnHelp()));
+    connect(ui_->btn_reset, SIGNAL(clicked()), this, SLOT(OnResetScene()));
 }
 
 mianWindow::~mianWindow()
@@ -59,4 +59,9 @@ void mianWindow::OnSwitchLayout()
 		m_views->SwitchToTCS();
 	else if(m_views->get_cur_layout() == LAYOUT_TCS)
 		m_views->SwitchToTCSV();
+}
+
+void mianWindow::OnResetScene()
+{
+	m_views->ResetScene();
 }

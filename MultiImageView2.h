@@ -21,6 +21,9 @@ public:
 	//显示交叉四视口模式
 	void SwitchToTCSV();
 	void fullScreenSwitch(const ViewType& type,bool is_full = false);
+
+	void ResetScene();
+
 protected:
 	void resizeEvent(QResizeEvent* event);
 private:

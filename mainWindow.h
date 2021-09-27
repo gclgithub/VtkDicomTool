@@ -17,6 +17,10 @@ public:
 public slots:
     void OnClose();
     void OnSwitchLayout();
+	void OnResetScene();
+	//void OnSwitchLayout();
+	//void OnSwitchLayout();
+
 private:
     static mianWindow*self;
     QTimer *main_timer;
