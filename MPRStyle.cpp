@@ -84,8 +84,8 @@ void MPRStyle::OnMouseMove()
 			QPoint delta = QPoint(pos[0], pos[1]) - QPoint(last_pos[0], last_pos[1]);
 			wl = -delta.y() * 0.1 + wl;
 			ww = delta.x() * 0.1 + ww;
-			wl = min(255.0, max(wl, 0.0));
-			ww = min(255.0, max(ww, 0.0));
+			//wl = min(255.0, max(wl, 0.0));
+			//ww = min(255.0, max(ww, 0.0));
 			for (auto sc : m_scenes)
 			{
 				if (sc->get_viewType() != VOL_M) 
@@ -308,11 +308,11 @@ void MPRStyle::moveCrossLine(double* pos)
 		}
 		else if (tmp == COR_M)
 		{
-			slicer_delta = -int(delta[1] / spacing[1] + 0.5);
+			slicer_delta = int(delta[1] / spacing[1] + 0.5);
 		}
 		else
 		{
-			slicer_delta = int(delta[0] / spacing[0] + 0.5);
+			slicer_delta = -int(delta[0] / spacing[0] + 0.5);
 		}
 
 		auto it = std::find_if(m_scenes.begin(), m_scenes.end(), [tmp](PTR<ViewRenderScene> sc) {

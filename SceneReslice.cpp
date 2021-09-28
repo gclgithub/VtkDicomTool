@@ -15,11 +15,16 @@ void SceneReslice::moveReslice(int value)
 {
 	if (m_reslice)
 	{
+		int is_up = 1;
+		auto orie = m_imgActor->GetOrientation();
+		if (orie[0] == 90 || orie[1] == 90) 
+			is_up = -1;
+
 		double spacing = m_reslice->GetOutput()->GetSpacing()[2];
 		double point[4], center[4];
 		point[0] = 0.0;
 		point[1] = 0.0;
-		point[2] = spacing * value;
+		point[2] = is_up * spacing * value;
 		point[3] = 1.0;
 
 		auto matrix = m_imgActor->GetMatrix();
@@ -64,13 +69,13 @@ void SceneReslice::get_slicer_num(int& max_slicer, int& cur_slicer)
 	{
 		max_slicer = m_img_size[1];
 		int delta = pos[1] / m_img_spacing[1];
-		cur_slicer = max_slicer - delta;
+		cur_slicer = delta + 1;
 	}
 	else if (orie[1] == 90)
 	{
 		max_slicer = m_img_size[0];
 		int delta = pos[0] / m_img_spacing[0];
-		cur_slicer = max_slicer - delta;
+		cur_slicer = delta + 1;
 	}
 	else
 	{

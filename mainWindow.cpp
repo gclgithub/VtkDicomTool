@@ -25,11 +25,20 @@ mianWindow::~mianWindow()
 
 void mianWindow::initiate()
 {
+	//std::string path = "C:\\Users\gcl\\Desktop\\Desktop\\T1WI";
+	std::string path = "D:\\ct_data\\mri\\PA1\\ST0\\SE4";
    //read dicom seriers
 	vtkNew<vtkDICOMImageReader> reader;
-	reader->SetDirectoryName("D:\\ct_data\\mri\\PA1\\ST0\\SE4");
+	reader->SetDirectoryName(path.c_str());
 	reader->Update();
 	reader->GetImageOrientationPatient();
+
+	auto img = reader->GetOutput();
+	short* data = (short*)img->GetScalarPointer();
+
+	//FILE* pf = fopen("D:\\se.bin", "wb");
+	//fwrite(data, sizeof(short), 512 * 512 * 88, pf);
+	//fclose(pf);
 
 	bool show_one_window = true;
 	if (show_one_window) 

@@ -410,7 +410,7 @@ void ViewRenderScene::initReslicer(SPTR<vtkImageData> imgData, SPTR<vtkMatrix4x4
 			break;
 		case ViewType::SAG_M:
 			m_reslice->get_imgActor()->RotateY(90);
-			m_cam_pos[0] = center[0] + 3000;
+			m_cam_pos[0] = center[0] - 3000;
 			m_cam_pos[1] = center[1];
 			m_cam_pos[2] = center[2];
 			cam->SetPosition(m_cam_pos[0], m_cam_pos[1], m_cam_pos[2]);
