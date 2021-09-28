@@ -23,6 +23,7 @@ public:
 	void fullScreenSwitch(const ViewType& type,bool is_full = false);
 
 	void ResetScene();
+	void ActivationTool(int tool_id);
 
 protected:
 	void resizeEvent(QResizeEvent* event);

@@ -8,6 +8,8 @@
 #include "vtkOpenGLRenderer.h"
 #include "vtkCallbackCommand.h"
 #include "vtkPropPicker.h"
+
+#include "SceneMeasureTools.h"
 vtkStandardNewMacro(MPRStyle);
 
 
@@ -33,6 +35,8 @@ void MPRStyle::OnKeyDown()
 
 void MPRStyle::OnMouseMove()
 {
+	if (m_tool)
+		m_tool->showMeasure(this->GetInteractor());
 	//std::cout << "OnMouseMove" << std::endl;
 	if (auto render_scene = GetCurRenderScene())
 	{
@@ -127,6 +131,8 @@ void MPRStyle::OnMouseMove()
 
 void MPRStyle::OnLeftButtonDown()
 {
+
+
 	int x = this->Interactor->GetEventPosition()[0];
 	int y = this->Interactor->GetEventPosition()[1];
 	this->FindPokedRenderer(x, y);
@@ -134,7 +140,7 @@ void MPRStyle::OnLeftButtonDown()
 	if (m_cur_actor = m_picker->GetActor())
 	{
 		MouseFunction = CrossLine;
-		std::cout << "MouseFunction:" << MouseFunction << std::endl;
+		//std::cout << "MouseFunction:" << MouseFunction << std::endl;
 	}
 	if (MouseFunction == POINTER) 
 	{
@@ -145,10 +151,6 @@ void MPRStyle::OnLeftButtonDown()
 void MPRStyle::OnLeftButtonUp()
 {
 	MouseFunction = POINTER;
-	//for (auto sc : m_scenes)
-	//{
-	//	sc->resetScene();
-	//}
 	m_cur_actor = nullptr;
 	Interactor->Render();
 }

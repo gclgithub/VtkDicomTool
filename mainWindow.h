@@ -18,8 +18,8 @@ public slots:
     void OnClose();
     void OnSwitchLayout();
 	void OnResetScene();
-	//void OnSwitchLayout();
-	//void OnSwitchLayout();
+	void OnActivationAngle();
+	void OnActivationRuler();
 
 private:
     static mianWindow*self;
@@ -27,4 +27,6 @@ private:
     QScopedPointer<Ui::MainWindow_ui> ui_;
 
     MultiImageView2* m_views = nullptr;
+
+    bool is_active_tool = false;
 };

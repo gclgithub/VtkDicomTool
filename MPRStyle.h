@@ -3,6 +3,7 @@
 #include "BasicVtkDefine.h"
 class ViewRenderScene;
 class MousePicker;
+class SceneMeasureTools;
 class MPRStyle : public vtkInteractorStyleImage
 {
 public:
@@ -19,7 +20,8 @@ public:
 		ROTATE,
 		SPIN,
 		DISTANCE,
-		ANGLE
+		ANGLE,
+		Needle
 	}MouseFunction;
 protected:
 	virtual void OnKeyDown()override;
@@ -47,4 +49,6 @@ private:
 	SetGetMacro(SPTR<MousePicker>, picker)
 
 	vtkActor* m_cur_actor = nullptr;
+
+	SetMacro(PTR<SceneMeasureTools>, tool);
 };

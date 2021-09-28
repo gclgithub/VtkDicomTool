@@ -8,7 +8,7 @@
 #include "QResizeEvent"
 #include "vtkTexturedButtonRepresentation2D.h"
 #include "SceneCrossLine.h"
-
+#include "SceneMeasureTools.h"
 
 MultiImageView2::MultiImageView2(QWidget* parent):QWidget(parent)
 {
@@ -195,6 +195,24 @@ void MultiImageView2::ResetScene()
 	m_scene_map[SAG_M]->resetScene();
 
 	qvtk_widget_->interactor()->Render();
+}
+
+void MultiImageView2::ActivationTool(int tool_id)
+{
+	PTR<SceneMeasureTools> tool = nullptr;
+	if (tool_id == 1) 
+	{
+		tool = SceneMeasureTools::New(SceneMeasureTools::kAngle);
+	}
+	else if(tool_id == 2)
+	{
+		tool = SceneMeasureTools::New(SceneMeasureTools::kDistance);
+	}
+	else 
+	{
+		tool = nullptr;
+	}
+	m_mprStyle->set_tool(tool);
 }
 
 void fullScreenCallback::Execute(vtkObject* caller, unsigned long, void*)

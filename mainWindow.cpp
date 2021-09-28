@@ -16,6 +16,9 @@ mianWindow::mianWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     self = this;
     connect(ui_->switch_btn, &QPushButton::clicked, this, &mianWindow::OnSwitchLayout);
     connect(ui_->btn_reset, SIGNAL(clicked()), this, SLOT(OnResetScene()));
+	connect(ui_->btn_angle, SIGNAL(clicked()), this, SLOT(OnActivationAngle()));
+	connect(ui_->btn_ruler, SIGNAL(clicked()), this, SLOT(OnActivationRuler()));
+
 }
 
 mianWindow::~mianWindow()
@@ -73,4 +76,32 @@ void mianWindow::OnSwitchLayout()
 void mianWindow::OnResetScene()
 {
 	m_views->ResetScene();
+}
+
+void mianWindow::OnActivationAngle()
+{
+	if (!is_active_tool) 
+	{
+		m_views->ActivationTool(1);
+		is_active_tool = true;
+	}
+	else
+	{
+		m_views->ActivationTool(0);
+		is_active_tool = false;
+	}
+}
+
+void mianWindow::OnActivationRuler()
+{
+	if (!is_active_tool)
+	{
+		m_views->ActivationTool(2);
+		is_active_tool = true;
+	}
+	else
+	{
+		m_views->ActivationTool(0);
+		is_active_tool = false;
+	}
 }
