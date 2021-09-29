@@ -35,6 +35,8 @@ using PTR = std::shared_ptr<Type>;
 template<typename Type>
 using WEAKPTR = std::weak_ptr<Type>;
 
+#define PTR_NEW(type) std::make_shared<type>()
+
 #define VarMacro(type, var_name)\
 protected:\
 type  m_##var_name{};\
