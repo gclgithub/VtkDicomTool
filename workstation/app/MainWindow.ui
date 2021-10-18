@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow_ui</class>
+ <widget class="QWidget" name="MainWindow_ui">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1597</width>
+    <height>799</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>VTKImageWindow</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="main_widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>20</y>
+     <width>1171</width>
+     <height>771</height>
+    </rect>
+   </property>
+   <property name="statusTip">
+    <string>打开文件夹</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_Dir">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>130</y>
+     <width>274</width>
+     <height>659</height>
+    </rect>
+   </property>
+   <property name="contextMenuPolicy">
+    <enum>Qt::DefaultContextMenu</enum>
+   </property>
+   <property name="toolTip">
+    <string/>
+   </property>
+   <property name="features">
+    <set>QDockWidget::NoDockWidgetFeatures</set>
+   </property>
+   <property name="windowTitle">
+    <string>Patient</string>
+   </property>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTreeView" name="treeView">
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+       <attribute name="headerMinimumSectionSize">
+        <number>25</number>
+       </attribute>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QToolButton" name="btn_open_dir">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>30</y>
+     <width>35</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>打开文件夹</string>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolButton { border:none;}</string>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/MainWindow/Resources/folder_128px_1207828_easyicon.net.ico</normalon>
+    </iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>35</width>
+     <height>35</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="btn_reset">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>80</y>
+     <width>35</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>重置</string>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolButton { border:none; }</string>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/MainWindow/Resources/cancel_128px_1209038_easyicon.net.ico</normalon>
+    </iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>35</width>
+     <height>35</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="btn_roi">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>30</y>
+     <width>35</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>勾画</string>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolButton { border:none; }</string>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/MainWindow/Resources/Bezier_Curve_128px_559452_easyicon.net.ico</normalon>
+    </iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>35</width>
+     <height>35</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="btn_save">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>30</y>
+     <width>35</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>保存</string>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolButton { border:none; }</string>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/MainWindow/Resources/file_128px_1197084_easyicon.net.ico</normalon>
+    </iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>35</width>
+     <height>35</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="btn_switch">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>80</y>
+     <width>35</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>切换视图</string>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolButton { border:none; }</string>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/MainWindow/Resources/video_negative_128px_1138773_easyicon.net.ico</normalon>
+    </iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>35</width>
+     <height>35</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="btn_angle">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>80</y>
+     <width>35</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>量角器</string>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolButton { border:none; }</string>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/MainWindow/Resources/Angle_Thingy_128px_559411_easyicon.net.ico</normalon>
+    </iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>35</width>
+     <height>35</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="btn_ruler">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>80</y>
+     <width>35</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>直尺</string>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolButton { border:none; }</string>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/MainWindow/Resources/ruler_128px_1209146_easyicon.net.ico</normalon>
+    </iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>35</width>
+     <height>35</height>
+    </size>
+   </property>
+  </widget>
+  <action name="action_OpenSeriesFolder">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/folder_128px_1207828_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/folder_128px_1207828_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>打开Series目录</string>
+   </property>
+  </action>
+  <action name="action_back">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/front_128px_1143868_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/front_128px_1143868_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>上一张</string>
+   </property>
+  </action>
+  <action name="action_next">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/next_128px_1143867_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/next_128px_1143867_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>下一张</string>
+   </property>
+  </action>
+  <action name="action_Pointer">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/mouse_128px_1153948_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/mouse_128px_1153948_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>无</string>
+   </property>
+  </action>
+  <action name="action_Protractor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/Angle_Thingy_128px_559411_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/Angle_Thingy_128px_559411_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>量角器</string>
+   </property>
+  </action>
+  <action name="action_Ruler">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/ruler_128px_1209146_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/ruler_128px_1209146_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>测距尺</string>
+   </property>
+  </action>
+  <action name="action_Contour">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/Bezier_Curve_128px_559452_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/Bezier_Curve_128px_559452_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>轮廓</string>
+   </property>
+   <property name="toolTip">
+    <string>轮廓</string>
+   </property>
+  </action>
+  <action name="action_BiDimensional">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/Arrow_Cross_128px_1177075_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/Arrow_Cross_128px_1177075_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>二维标尺</string>
+   </property>
+  </action>
+  <action name="action_Negative">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/video_negative_128px_1138773_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/video_negative_128px_1138773_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>负片</string>
+   </property>
+  </action>
+  <action name="action_Reset">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/cancel_128px_1209038_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/cancel_128px_1209038_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>复位</string>
+   </property>
+  </action>
+  <action name="action_Zoom">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/zoom_in_128px_1200197_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/zoom_in_128px_1200197_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>缩放</string>
+   </property>
+  </action>
+  <action name="action_GrayLevel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/brightness_128px_1193620_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/brightness_128px_1193620_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>灰阶</string>
+   </property>
+   <property name="toolTip">
+    <string>灰阶</string>
+   </property>
+  </action>
+  <action name="action_Move">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/move_Hand_128px_1154031_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/move_Hand_128px_1154031_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>移动</string>
+   </property>
+  </action>
+  <action name="action_SwitchOfProperty">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>属性</string>
+   </property>
+  </action>
+  <action name="action_Play">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/play_128px_1197036_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/play_128px_1197036_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>播放</string>
+   </property>
+  </action>
+  <action name="action_Stop">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/stop_128px_1197040_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/stop_128px_1197040_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>停止</string>
+   </property>
+  </action>
+  <action name="action_TestEntrance_01">
+   <property name="text">
+    <string>测试入口1</string>
+   </property>
+  </action>
+  <action name="action_TestEntrance_02">
+   <property name="text">
+    <string>测试入口2</string>
+   </property>
+  </action>
+  <action name="action_OpenDicomDirFile">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/file_128px_1197084_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/file_128px_1197084_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>打开DICOMDIR文件</string>
+   </property>
+  </action>
+  <action name="action_OpenDicomFile">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/X_Ray_Hand_128px_1124752_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/X_Ray_Hand_128px_1124752_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>打开Dicom文件</string>
+   </property>
+  </action>
+  <action name="action_PreviousPatient">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/hand_pointing_left_128px_1143134_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/hand_pointing_left_128px_1143134_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>上一个病人</string>
+   </property>
+  </action>
+  <action name="action_LatterPatient">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/hand_pointing_right_128px_1143133_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/hand_pointing_right_128px_1143133_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>下一个病人</string>
+   </property>
+  </action>
+  <action name="action_WindowWL_Default">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>默认</string>
+   </property>
+  </action>
+  <action name="action_WindowWL_All">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>全部动态范围</string>
+   </property>
+  </action>
+  <action name="action_WindowWL_CT_Abdomen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>CT-腹</string>
+   </property>
+  </action>
+  <action name="action_WindowWL_CT_BloodVessel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>CT-血管</string>
+   </property>
+  </action>
+  <action name="action_WindowWL_CT_Bones">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>CT-骨骼</string>
+   </property>
+  </action>
+  <action name="action_WindowWL_CT_Brain">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>CT-脑</string>
+   </property>
+  </action>
+  <action name="action_WindowWL_CT_Medias">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>CT-纵膈</string>
+   </property>
+  </action>
+  <action name="action_WindowWL_CT_Lungs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>CT-肺</string>
+   </property>
+  </action>
+  <action name="action_Registration">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QvtkDicomViewer/Resources/aim_128px_1207156_easyicon.net.ico</normaloff>:/QvtkDicomViewer/Resources/aim_128px_1207156_easyicon.net.ico</iconset>
+   </property>
+   <property name="text">
+    <string>配准工具</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="MainWindow.qrc"/>
+ </resources>
+ <connections/>
+</ui>
